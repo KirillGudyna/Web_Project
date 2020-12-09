@@ -1,0 +1,73 @@
+package com.gudyna.webproject.model.dao.impl;
+
+import com.gudyna.webproject.exception.DaoException;
+import com.gudyna.webproject.model.dao.DrugDao;
+import com.gudyna.webproject.model.entity.DrugData;
+import com.gudyna.webproject.model.pool.ConnectionPool;
+import com.gudyna.webproject.model.util.DaoUtils;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+public class DrugDaoImpl implements DrugDao {
+    private static final String SQL_ADD_DRUG = "INSERT INTO drug "
+            + "(name,amount,term_taking,purpose_id) VALUES (?,?,?,?)";
+    private static final DrugDaoImpl INSTANCE = new DrugDaoImpl();
+    private static final String SQL_DELETE_DRUG = "DELETE FROM drug WHERE purpose_id=?";
+    private static final String SQL_SELECT_DRUG_BY_PURPOSE_ID = "SELECT* FROM drug WHERE purpose_id=?";
+
+    private DrugDaoImpl() {
+    }
+
+    public static DrugDaoImpl getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public DrugData addDrug(DrugData data) throws DaoException {
+        Connection connection = ConnectionPool.getInstance().getConnection();
+        try {
+            PreparedStatement statement = DaoUtils.getStatement(SQL_ADD_DRUG, connection);
+            ResultSet resultSet = DaoUtils.executeStatement(data,
+                    Arrays.asList("Name", "Amount", "TermTaking", "PurposeId"), statement);
+            data.setId(resultSet.getInt(1));
+            DaoUtils.commitConnection(connection);
+        } catch (SQLException e) {
+            throw new DaoException("Unable to add data about drug!", e);
+        }
+        return data;
+    }
+
+    @Override
+    public boolean deleteDrug(int id) throws DaoException {
+        Connection connection = ConnectionPool.getInstance().getConnection();
+        try {
+            PreparedStatement statement = DaoUtils.getStatement(SQL_DELETE_DRUG, connection);
+            int deletedDrugId = DaoUtils.executeDeleteStatement(id, statement);
+            DaoUtils.commitConnection(connection);
+            return deletedDrugId != 0;
+        } catch (SQLException e) {
+            throw new DaoException("Unable to delete data about drug!", e);
+        }
+    }
+
+    @Override
+    public List<DrugData> getDrugByPurposeId(int purposeId) throws DaoException {
+        Connection connection = ConnectionPool.getInstance().getConnection();
+        try {
+            PreparedStatement statement = DaoUtils.getStatement(SQL_SELECT_DRUG_BY_PURPOSE_ID, connection);
+            ResultSet resultSet = DaoUtils.executeSelectStatement(Collections.singletonList(purposeId + ":int"), statement);
+            return DaoUtils.initObjectTypeList(new ArrayList<>(), DrugData.class, resultSet);
+        } catch (SQLException e) {
+            throw new DaoException("Unable to delete data about drug!", e);
+        } finally {
+            ConnectionPool.getInstance().releaseConnection(connection);
+        }
+    }
+}
