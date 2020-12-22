@@ -3,6 +3,8 @@ package com.gudyna.webproject.model.entity;
 public class DoctorData {
     private String timeWork;
     private String jobType;
+    private int maxAppPerDay;
+    private int minPrice;
     private int userId;
 
     public DoctorData() {
@@ -24,6 +26,22 @@ public class DoctorData {
 
     public String getTimeWork() {
         return timeWork;
+    }
+
+    public int getMaxAppPerDay() {
+        return maxAppPerDay;
+    }
+
+    public void setMaxAppPerDay(int maxAppPerDay) {
+        this.maxAppPerDay = maxAppPerDay;
+    }
+
+    public int getMinPrice() {
+        return minPrice;
+    }
+
+    public void setMinPrice(int minPrice) {
+        this.minPrice = minPrice;
     }
 
     public void setTimeWork(String timeWork) {

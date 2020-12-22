@@ -1,10 +1,11 @@
 package com.gudyna.webproject.model.entity;
 
+import java.sql.Date;
 import java.util.Objects;
 
 public class AppointmentData {
     private boolean isClosed;
-    private String dateTime;
+    private Date dateTime;
     private int price;
     private int patientId;
     private int doctorId;
@@ -18,11 +19,11 @@ public class AppointmentData {
         isClosed = closed;
     }
 
-    public String getDateTime() {
+    public Date getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(String dateTime) {
+    public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -85,25 +86,26 @@ public class AppointmentData {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("AppointmentData{\n");
+        builder.append("AppointmentData{");
         builder.append("id=");
         builder.append(id);
-        builder.append("\n");
-        builder.append("date=");
+        builder.append(";");
+        builder.append("dateTime=");
         builder.append(dateTime);
-        builder.append("\n");
+        builder.append(";");
         builder.append("price=");
         builder.append(price);
-        builder.append("\n");
+        builder.append(";");
         builder.append("patientId=");
         builder.append(patientId);
-        builder.append("\n");
+        builder.append(";");
         builder.append("doctorId=");
         builder.append(doctorId);
-        builder.append("\n");
+        builder.append(";");
         builder.append("isClosed=");
         builder.append(isClosed);
-        builder.append("\n}");
+        builder.append("}");
         return builder.toString();
     }
+
 }

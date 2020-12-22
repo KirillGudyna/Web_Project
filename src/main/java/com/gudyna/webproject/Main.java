@@ -1,16 +1,13 @@
 package com.gudyna.webproject;
 
-import com.google.gson.Gson;
 import com.gudyna.webproject.exception.DaoException;
-import com.gudyna.webproject.model.dao.AppointmentDao;
-import com.gudyna.webproject.model.dao.impl.*;
+import com.gudyna.webproject.exception.ServiceException;
 import com.gudyna.webproject.model.entity.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.gudyna.webproject.model.service.impl.PurposeServiceImpl;
+import com.gudyna.webproject.request.form.RequestAddPurposeData;
 
 public class Main {
-    public static void main(String[] args) throws DaoException {
+    public static void main(String[] args) throws DaoException, ServiceException {
         /*AppointmentData data = new AppointmentData();
         data.setDate("2020.11.20");
         data.setPrice(2000);
@@ -55,10 +52,22 @@ public class Main {
         for(DoctorData data:list){
             System.out.println(UserDaoImpl.getInstance().getUserById(data.getUserId()));
         }*/
-        List<AppointmentData> dataList;
-        dataList =AppointmentDaoImpl.getInstance().getAppointmentsByDoctorId(12,false);
-        System.out.println(dataList);
-        // System.out.println(drugDao.addDrug(drugData));
-        //System.out.println(UserDaoImpl.getInstance().getUserByEmail("kirill.gud2000"));
+        PurposeData purposeData = new PurposeData();
+        purposeData.setAppointmentId(6);
+        purposeData.setDiagnosis("lol");
+        DrugData drugData = new DrugData();
+        drugData.setTermTaking(10);
+        drugData.setAmount(43);
+        drugData.setName("kokainasdasdasd");
+        MedicalProcedureData data1 = new MedicalProcedureData();
+        data1.setDateStart("2020.10.2");
+        data1.setDateEnd("2020.11.2");
+        data1.setName("masaasdg");
+        RequestAddPurposeData requestAddPurposeData = new RequestAddPurposeData();
+        requestAddPurposeData.setProcedure(data1);
+        requestAddPurposeData.setDrug(drugData);
+        requestAddPurposeData.setPurpose(purposeData);
+        System.out.println(PurposeServiceImpl.getInstance().addPurpose(requestAddPurposeData));
+
     }
 }

@@ -1,7 +1,5 @@
 package com.gudyna.webproject.model.entity;
 
-import java.util.Objects;
-
 public class MedicalProcedureData {
     private String name;
     private String dateStart;

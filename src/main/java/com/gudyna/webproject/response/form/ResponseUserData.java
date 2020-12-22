@@ -10,6 +10,8 @@ public class ResponseUserData {
     private String dateOfBirth;
     private String email;
     private boolean isDoctor;
+    private int maxAppPerDay;
+    private int minPrice;
     private String jobType;
     private String timeWork;
     private String profession;
@@ -25,6 +27,22 @@ public class ResponseUserData {
 
     public static ResponseUserData fromUserData(UserData userData) {
         return new ResponseUserData(userData);
+    }
+
+    public int getMaxAppPerDay() {
+        return maxAppPerDay;
+    }
+
+    public int getMinPrice() {
+        return minPrice;
+    }
+
+    public void setMinPrice(int minPrice) {
+        this.minPrice = minPrice;
+    }
+
+    public void setMaxAppPerDay(int maxAppPerDay) {
+        this.maxAppPerDay = maxAppPerDay;
     }
 
     public void setProfession(String profession) {

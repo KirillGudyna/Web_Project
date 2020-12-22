@@ -7,8 +7,8 @@ import com.gudyna.webproject.controller.Router;
 import com.gudyna.webproject.exception.ServiceException;
 import com.gudyna.webproject.model.service.UserService;
 import com.gudyna.webproject.model.service.impl.UserServiceImpl;
-import com.gudyna.webproject.response.ResponseWrapper;
 import com.gudyna.webproject.response.form.ResponseUserData;
+import com.gudyna.webproject.util.ParameterKey;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,19 +21,30 @@ public class LogInCommand implements ActionCommand {
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
-        HttpSession session = request.getSession();
         try {
-            ResponseUserData response = userService.authorizeUser(request.getParameter("email"), request.getParameter("password"), isDoctor(request.getParameter("isdoctor")));
-            request.setAttribute("response",ResponseWrapper.setSuccess("User successfully authorized", response));
-            session.setAttribute(AttributeKey.USER,response);
-            router =new Router("main page");
+            String email = request.getParameter(ParameterKey.EMAIL_PARAM);
+            String password = request.getParameter(ParameterKey.PASSWORD_PARAM);
+            boolean isDoctor = isDoctor(request.getParameter(ParameterKey.IS_DOCTOR_PARAM));
+            ResponseUserData responseUser = userService.authorizeUser(email, password, isDoctor);
+            HttpSession session = request.getSession();
+            session.setAttribute(ParameterKey.USER_ID, responseUser.getId());
+            session.setAttribute(ParameterKey.USER_NAME, responseUser.getName() + " " + responseUser.getSurname());
+            if (isDoctor) {
+                session.setAttribute(ParameterKey.USER_TYPE, AttributeKey.DOCTOR);
+                router = new Router(PageName.DOCTOR_HOME.getPath());
+            } else {
+                session.setAttribute(ParameterKey.USER_TYPE, AttributeKey.PATIENT);
+                router = new Router(PageName.PATIENT_HOME.getPath());
+            }
         } catch (ServiceException e) {
-            request.setAttribute("response",ResponseWrapper.setError("Unable to authorize user" + e.getMessage()));
-            router = new Router(PageName.ERROR.getPath());
+            request.setAttribute(AttributeKey.LOGIN_RESPONSE_MESSAGE, "login.error.message");
+            router = new Router(PageName.LOGIN.getPath());
         }
+
         return router;
     }
-    private boolean isDoctor(String parameter){
+
+    private boolean isDoctor(String parameter) {
         return BUTTON_ON.equals(parameter);
     }
 }

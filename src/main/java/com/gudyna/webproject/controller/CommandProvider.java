@@ -1,6 +1,7 @@
 package com.gudyna.webproject.controller;
 
 public class CommandProvider {
+
     private CommandProvider() {
     }
 

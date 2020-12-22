@@ -10,7 +10,6 @@ import com.gudyna.webproject.model.service.impl.DoctorServiceImpl;
 import com.gudyna.webproject.response.form.ResponseUserData;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 
 public class GetAllDoctorsCommand implements ActionCommand {
@@ -18,7 +17,7 @@ public class GetAllDoctorsCommand implements ActionCommand {
     private final DoctorService service = DoctorServiceImpl.getInstance();
 
     @Override
-    public Router execute(HttpServletRequest request) throws IOException {
+    public Router execute(HttpServletRequest request) {
         Router router;
         try {
             List<ResponseUserData> doctors = service.getAllDoctors();
@@ -27,6 +26,7 @@ public class GetAllDoctorsCommand implements ActionCommand {
         } catch (ServiceException e) {
             router = new Router(PageName.ERROR.getPath());
         }
+
         return router;
     }
 }

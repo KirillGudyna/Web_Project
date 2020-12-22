@@ -1,6 +1,7 @@
 package com.gudyna.webproject.controller.impl;
 
 import com.gudyna.webproject.controller.ActionCommand;
+import com.gudyna.webproject.controller.PageName;
 import com.gudyna.webproject.controller.Router;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +13,6 @@ public class LogOutCommand implements ActionCommand {
     public Router execute(HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.invalidate();
-
-        return new Router("home");
+        return new Router(PageName.INDEX.getPath());
     }
 }

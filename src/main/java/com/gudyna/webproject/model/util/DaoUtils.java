@@ -21,21 +21,21 @@ public class DaoUtils {
         STRING_STATEMENT_UPDATE_INITIALIZER_MAP.put("int", (ps, i, o, s) -> ps.setInt(i + 1, (Integer) o.getClass().getDeclaredMethod(GET + s).invoke(o)));
         STRING_STATEMENT_UPDATE_INITIALIZER_MAP.put("String", (ps, i, o, s) -> ps.setString(i + 1, (String) o.getClass().getDeclaredMethod(GET + s).invoke(o)));
         STRING_STATEMENT_UPDATE_INITIALIZER_MAP.put("Date", (ps, i, o, s) -> ps.setDate(i + 1, (Date) o.getClass().getDeclaredMethod(GET + s).invoke(o)));
-        STRING_STATEMENT_UPDATE_INITIALIZER_MAP.put("boolean", (ps,i,o,s) -> ps.setBoolean(i+1,(Boolean) o.getClass().getDeclaredMethod(GET+s).invoke(o)));
+        STRING_STATEMENT_UPDATE_INITIALIZER_MAP.put("boolean", (ps, i, o, s) -> ps.setBoolean(i + 1, (Boolean) o.getClass().getDeclaredMethod(GET + s).invoke(o)));
     }
 
     static {
         STRING_STATEMENT_SELECT_INITIALIZER_MAP.put("int", (ps, i, o) -> ps.setInt(i + 1, Integer.parseInt((String) o)));
         STRING_STATEMENT_SELECT_INITIALIZER_MAP.put("String", (ps, i, o) -> ps.setString(i + 1, (String) o));
         STRING_STATEMENT_SELECT_INITIALIZER_MAP.put("Date", (ps, i, o) -> ps.setDate(i + 1, Date.valueOf((String) o)));
-        STRING_STATEMENT_SELECT_INITIALIZER_MAP.put("boolean",(ps,i,o)->ps.setBoolean(i+1,Boolean.parseBoolean((String)o)));
+        STRING_STATEMENT_SELECT_INITIALIZER_MAP.put("boolean", (ps, i, o) -> ps.setBoolean(i + 1, Boolean.parseBoolean((String) o)));
     }
 
     static {
         STRING_OBJECT_INITIALIZER_MAP.put("int", (rs, o, s) -> o.getClass().getDeclaredMethod(SET + toCamelCase(s), int.class).invoke(o, rs.getInt(s)));
         STRING_OBJECT_INITIALIZER_MAP.put("String", (rs, o, s) -> o.getClass().getDeclaredMethod(SET + toCamelCase(s), String.class).invoke(o, rs.getString(s)));
         STRING_OBJECT_INITIALIZER_MAP.put("Date", (rs, o, s) -> o.getClass().getDeclaredMethod(SET + toCamelCase(s), Date.class).invoke(o, rs.getDate(s)));
-        STRING_OBJECT_INITIALIZER_MAP.put("boolean",(rs,o,s)->o.getClass().getDeclaredMethod(SET+toCamelCase(s),boolean.class).invoke(o,rs.getBoolean(s)));
+        STRING_OBJECT_INITIALIZER_MAP.put("boolean", (rs, o, s) -> o.getClass().getDeclaredMethod(SET + toCamelCase(s), boolean.class).invoke(o, rs.getBoolean(s)));
     }
 
     private DaoUtils() {
@@ -43,8 +43,11 @@ public class DaoUtils {
     }
 
     public static PreparedStatement getStatement(String query, Connection connection) throws SQLException {
-        connection.setAutoCommit(false);
         return connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+    }
+
+    public static PreparedStatement getStatement(String query, Connection connection, int resultSetType) throws SQLException {
+        return connection.prepareStatement(query, resultSetType, ResultSet.CONCUR_READ_ONLY);
     }
 
     public static ResultSet executeStatement(Object data, List<String> list, PreparedStatement statement) throws SQLException {
@@ -121,7 +124,7 @@ public class DaoUtils {
         }
     }
 
-    public static void commitConnection(Connection connection) throws SQLException {
+    public static void commitOrRollbackConnection(Connection connection) throws SQLException {
         try {
             connection.commit();
         } catch (SQLException e) {
@@ -138,7 +141,6 @@ public class DaoUtils {
                 .map(token -> token.substring(0, 1).toUpperCase() + token.substring(1))
                 .collect(Collectors.joining());
     }
-
 
 
 }

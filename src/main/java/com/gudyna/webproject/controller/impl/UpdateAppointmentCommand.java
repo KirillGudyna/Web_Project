@@ -11,21 +11,25 @@ import com.gudyna.webproject.response.form.ResponseAppointmentData;
 import com.gudyna.webproject.util.ParameterKey;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.sql.Date;
 import java.util.List;
 
-public class GetAllOpenAppointments implements ActionCommand {
+public class UpdateAppointmentCommand implements ActionCommand {
 
     private final AppointmentService service = AppointmentServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request) {
         Router router;
-        HttpSession session = request.getSession();
-        int doctorId = (int) session.getAttribute(ParameterKey.USER_ID);
+        int price = Integer.parseInt(request.getParameter(ParameterKey.PRICE));
+        int appointmentId = Integer.parseInt(request.getParameter(AttributeKey.CHOSEN_APPOINTMENT_ID));
+        Date dateTime = Date.valueOf(request.getParameter(ParameterKey.DATE_TIME));
+        int doctorId = (int) request.getSession().getAttribute(ParameterKey.USER_ID);
         try {
-            List<ResponseAppointmentData> dataList = service.getOpenAppointmentByDoctorId(doctorId);
-            request.setAttribute(AttributeKey.APPOINTMENTS_ATTR, dataList);
+            service.updateAppointmentByParameters(appointmentId, price, dateTime);
+            List<ResponseAppointmentData> responseAppointmentList = service.getOpenAppointmentByDoctorId(doctorId);
+            request.setAttribute(AttributeKey.APPOINTMENTS_ATTR, responseAppointmentList);
+
             router = new Router(PageName.OPEN_APPOINTMENTS_PAGE.getPath());
         } catch (ServiceException e) {
             router = new Router(PageName.ERROR.getPath());

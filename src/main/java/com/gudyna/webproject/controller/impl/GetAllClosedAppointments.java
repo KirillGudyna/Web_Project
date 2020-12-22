@@ -5,30 +5,33 @@ import com.gudyna.webproject.controller.AttributeKey;
 import com.gudyna.webproject.controller.PageName;
 import com.gudyna.webproject.controller.Router;
 import com.gudyna.webproject.exception.ServiceException;
-import com.gudyna.webproject.model.entity.AppointmentData;
 import com.gudyna.webproject.model.service.AppointmentService;
 import com.gudyna.webproject.model.service.impl.AppointmentServiceImpl;
+import com.gudyna.webproject.response.form.ResponseAppointmentData;
+import com.gudyna.webproject.util.ParameterKey;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.List;
 
-public class GetAllCloseAppointments implements ActionCommand {
+public class GetAllClosedAppointments implements ActionCommand {
+
     private final AppointmentService service = AppointmentServiceImpl.getInstance();
 
     @Override
-    public Router execute(HttpServletRequest request) throws IOException {
+    public Router execute(HttpServletRequest request) {
         Router router;
-        HttpSession session = request.getSession();
-        int doctorId =Integer.parseInt((String)session.getAttribute("user_id"));
+
+        int doctorId = (int) request.getSession().getAttribute(ParameterKey.USER_ID);
         try {
-            List<AppointmentData> dataList = service.getCloseAppointmentByDoctorId(doctorId);
-            request.setAttribute(AttributeKey.APPOINTMENTS_ATTR, dataList);
+            List<ResponseAppointmentData> appointments = service.getCloseAppointmentByDoctorId(doctorId);
+            request.setAttribute(AttributeKey.APPOINTMENTS_ATTR, appointments);
+
             router = new Router(PageName.CLOSE_APPOINTMENTS_PAGE.getPath());
         } catch (ServiceException e) {
             router = new Router(PageName.ERROR.getPath());
         }
+
         return router;
     }
 }

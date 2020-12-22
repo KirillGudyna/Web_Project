@@ -7,9 +7,9 @@ import com.gudyna.webproject.controller.Router;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-public class UpdateAppointmentPageCommand implements ActionCommand {
+public class GoToDoctorHomePageCommand implements ActionCommand {
     @Override
     public Router execute(HttpServletRequest request) throws IOException {
-        return new Router(PageName.UPDATE_PAGE.getPath());
+        return new Router(PageName.DOCTOR_HOME.getPath());
     }
 }

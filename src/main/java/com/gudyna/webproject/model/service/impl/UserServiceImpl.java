@@ -14,9 +14,13 @@ import com.gudyna.webproject.model.entity.UserData;
 import com.gudyna.webproject.model.service.UserService;
 import com.gudyna.webproject.request.form.RequestUserRegistrationData;
 import com.gudyna.webproject.response.form.ResponseUserData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class UserServiceImpl implements UserService {
+
     private static final String KEY = "asd";
+    private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
     private final UserDao userDao = UserDaoImpl.getInstance();
     private final DoctorDao doctorDao = DoctorDaoImpl.getInstance();
@@ -45,8 +49,10 @@ public class UserServiceImpl implements UserService {
             } else{
                 data = userDao.addUserAsDoctor(registrationData);
             }
+
             return data;
         } catch (DaoException e) {
+            LOGGER.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -78,9 +84,11 @@ public class UserServiceImpl implements UserService {
                 responseUserData.setDoctor(true);
             }
             responseUserData.setProfession(patientData.getProfession());
+
+            return responseUserData;
         } catch (DaoException e) {
+            LOGGER.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
-        return responseUserData;
     }
 }

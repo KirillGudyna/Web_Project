@@ -7,9 +7,9 @@ import com.gudyna.webproject.controller.Router;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-public class HomePageCommand implements ActionCommand {
+public class LoginPageCommand implements ActionCommand {
     @Override
     public Router execute(HttpServletRequest request) throws IOException {
-        return new Router(PageName.HOME.getPath());
+        return new Router(PageName.LOGIN.getPath());
     }
 }

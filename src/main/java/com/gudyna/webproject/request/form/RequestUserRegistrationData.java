@@ -11,10 +11,29 @@ public class RequestUserRegistrationData {
     private String password;
     private String email;
     private boolean isDoctor;
+    private int maxAppPerDay;
     private String keyDoctor;
+    private int minPrice;
     private String timeWork;
     private String jobType;
     private String profession;
+
+    public int getMaxAppPerDay() {
+        return maxAppPerDay;
+    }
+
+    public int getMinPrice() {
+        return minPrice;
+    }
+
+    public void setMinPrice(int minPrice) {
+        this.minPrice = minPrice;
+    }
+
+
+    public void setMaxAppPerDay(int maxAppPerDay) {
+        this.maxAppPerDay = maxAppPerDay;
+    }
 
     public int getUserId() {
         return userId;

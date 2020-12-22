@@ -6,7 +6,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class ProcessController extends HttpServlet {
@@ -27,7 +26,6 @@ public class ProcessController extends HttpServlet {
         String page = router.getPage();
 
         request.getSession().setAttribute("current_page", page);
-
         if (router.getTransition() == Router.Transition.FORWARD) {
             request.getRequestDispatcher(page).forward(request, response);
         } else {

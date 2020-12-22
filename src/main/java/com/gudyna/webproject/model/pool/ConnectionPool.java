@@ -18,23 +18,23 @@ public class ConnectionPool {
     private static final int POOL_SIZE = 8;
     private BlockingQueue<ProxyConnection> involvedConnections;
     private BlockingQueue<ProxyConnection> freeConnections;
-    private final Logger logger = LogManager.getLogger(ConnectionPool.class);
+    private static final Logger LOGGER = LogManager.getLogger(ConnectionPool.class);
     public static final String DB_PROPERTIES = "db";
 
     private ConnectionPool() {
-        ResourceBundle  resourceBundle = ResourceBundle.getBundle(DB_PROPERTIES);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(DB_PROPERTIES);
         String url = resourceBundle.getString("db.url");
         String user = resourceBundle.getString("db.user");
         String password = resourceBundle.getString("db.password");
         this.freeConnections = new LinkedBlockingDeque<>(POOL_SIZE);
         this.involvedConnections = new LinkedBlockingDeque<>(POOL_SIZE);
-        try{
+        try {
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
             for (int i = 0; i < POOL_SIZE; i++) {
                 Connection connection = DriverManager.getConnection(url, user, password);
                 freeConnections.offer(new ProxyConnection(connection));
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             throw new RuntimeException("impossible create connection to db or with creation driver");
         }
     }
@@ -43,63 +43,48 @@ public class ConnectionPool {
         return INSTANCE;
     }
 
-    /**
-     * Gets connection.
-     *
-     * @return the connection
-     */
     public ProxyConnection getConnection() {
         ProxyConnection connection = null;
         try {
             connection = freeConnections.take();
             involvedConnections.offer(connection);
-        } catch (InterruptedException e) {
-            logger.log(Level.ERROR, "Impossible provide connection");
+            connection.setAutoCommit(true);
+        } catch (InterruptedException | SQLException e) {
+            LOGGER.log(Level.ERROR, "Impossible provide connection or set auto commit");
         }
         return connection;
     }
 
-    /**
-     * Realise connection.
-     *
-     * @param connection the connection
-     */
     public void releaseConnection(Connection connection) {
         if (connection.getClass().equals(ProxyConnection.class)) {
             if (involvedConnections.remove(connection)) {
                 freeConnections.offer((ProxyConnection) connection);
             } else {
-                logger.log(Level.ERROR, "Pool does not include given connection");
+                LOGGER.log(Level.ERROR, "Pool does not include given connection");
             }
         } else {
-            logger.log(Level.ERROR, "Given connection is not a proxy connection");
+            LOGGER.log(Level.ERROR, "Given connection is not a proxy connection");
         }
     }
 
-    /**
-     * Destroy pool.
-     */
     public void destroyPool() {
         for (int i = 0; i < POOL_SIZE; i++) {
             try {
                 freeConnections.take().reallyClose();
             } catch (SQLException | InterruptedException e) {
-                logger.log(Level.ERROR, "Impossible close connection", e);
+                LOGGER.log(Level.ERROR, "Impossible close connection", e);
             }
         }
         deregisterDrivers();
     }
 
-    /**
-     * Deregister drivers.
-     */
     public void deregisterDrivers() {
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {
             try {
                 DriverManager.deregisterDriver(drivers.nextElement());
             } catch (SQLException e) {
-                logger.log(Level.ERROR, "Impossible deregister driver", e);
+                LOGGER.log(Level.ERROR, "Impossible deregister driver", e);
             }
         }
     }

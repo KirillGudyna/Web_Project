@@ -48,4 +48,13 @@ public class ResponsePurposeData {
     public boolean addAllProcedureData(List<MedicalProcedureData> proceduresData){
         return this.proceduresData.addAll(proceduresData);
     }
+
+    @Override
+    public String toString() {
+        return "ResponsePurposeData{" +
+                "purposeData=" + purposeData +
+                ", drugsData=" + drugsData +
+                ", proceduresData=" + proceduresData +
+                '}';
+    }
 }
